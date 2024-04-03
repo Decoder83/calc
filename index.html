@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="lt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prekės kainos pokyčio skaičiuoklė</title>
+    <style>
+        input[type="text"] {
+            border: 1px solid #ccc;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Prekės kainos pokyčio skaičiuoklė</h2>
+
+    <form id="priceChangeForm">
+        <label for="initialPrice">Pradinė kaina:</label><br>
+        <input type="text" id="initialPrice" name="initialPrice"><br>
+        <label for="priceChange">Kainos pokytis:</label><br>
+        <select id="priceChange" name="priceChange">
+            <option value="increase">Brangsta</option>
+            <option value="decrease">Pigiau</option>
+        </select><br>
+        <label for="percentage">Procentai:</label><br>
+        <input type="text" id="percentage" name="percentage"><br>
+        <input type="submit" value="Skaičiuoti" id="calculateButton" disabled>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('priceChangeForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var initialPrice = parseFloat(document.getElementById('initialPrice').value);
+            var priceChange = document.getElementById('priceChange').value;
+            var percentage = parseFloat(document.getElementById('percentage').value);
+            var resultElement = document.getElementById('result');
+
+            if (isNaN(initialPrice) || initialPrice <= 0 || isNaN(percentage) || percentage <= 0 || percentage > 100) {
+                resultElement.innerHTML = '<p class="error">Įveskite teisingus duomenis.</p>';
+                return;
+            }
+
+            var newPrice;
+            if (priceChange === 'increase') {
+                newPrice = initialPrice * (1 + percentage / 100);
+            } else {
+                newPrice = initialPrice * (1 - percentage / 100);
+            }
+
+            resultElement.innerHTML = '<p class="success">Nauja kaina: ' + newPrice.toFixed(2) + ' Eur</p>';
+        });
+
+        document.getElementById('initialPrice').addEventListener('input', validateInput);
+        document.getElementById('percentage').addEventListener('input', validateInput);
+
+        function validateInput() {
+            var initialPrice = parseFloat(document.getElementById('initialPrice').value);
+            var percentage = parseFloat(document.getElementById('percentage').value);
+            var calculateButton = document.getElementById('calculateButton');
+
+            if (!isNaN(initialPrice) && initialPrice > 0 && !isNaN(percentage) && percentage > 0 && percentage <= 100) {
+                calculateButton.disabled = false;
+            } else {
+                calculateButton.disabled = true;
+            }
+        }
+    </script>
+
+</body>
+
+</html>
