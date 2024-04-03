@@ -7,7 +7,6 @@
     <title>Prekės kainos pokyčio skaičiuoklė</title>
     <style>
         input[type="text"] {
-            border: 1px solid #ccc;
             padding: 8px;
             margin-bottom: 10px;
         }
@@ -45,20 +44,54 @@
 
     <form id="priceChangeForm">
         <label for="initialPrice">Pradinė kaina:</label><br>
-        <input type="text" id="initialPrice" name="initialPrice"><br>
+        <input type="text" id="initialPrice" name="initialPrice" oninput="validateInput(this)"><br>
         <label for="priceChange">Kainos pokytis:</label><br>
         <select id="priceChange" name="priceChange">
             <option value="increase">Brangsta</option>
             <option value="decrease">Pigiau</option>
         </select><br>
         <label for="percentage">Procentai:</label><br>
-        <input type="text" id="percentage" name="percentage"><br>
+        <input type="text" id="percentage" name="percentage" oninput="validateInput(this)"><br>
         <input type="submit" value="Skaičiuoti" id="calculateButton" disabled>
     </form>
 
     <div id="result"></div>
 
     <script>
+        function validateInput(inputElement) {
+            var inputValue = inputElement.value;
+            var isValid = false;
+
+            if (inputValue.trim() === '') {
+                inputElement.style.backgroundColor = '';
+                return;
+            }
+
+            if (inputElement.id === 'initialPrice' || inputElement.id === 'percentage') {
+                isValid = !isNaN(inputValue) && parseFloat(inputValue) >= 0;
+            }
+
+            if (inputElement.id === 'percentage') {
+                isValid = isValid && parseFloat(inputValue) <= 100;
+            }
+
+            if (isValid) {
+                inputElement.style.backgroundColor = 'lightgreen';
+            } else {
+                inputElement.style.backgroundColor = 'lightcoral';
+            }
+
+            var initialPrice = parseFloat(document.getElementById('initialPrice').value);
+            var percentage = parseFloat(document.getElementById('percentage').value);
+            var calculateButton = document.getElementById('calculateButton');
+
+            if (!isNaN(initialPrice) && initialPrice > 0 && !isNaN(percentage) && percentage > 0 && percentage <= 100) {
+                calculateButton.disabled = false;
+            } else {
+                calculateButton.disabled = true;
+            }
+        }
+
         document.getElementById('priceChangeForm').addEventListener('submit', function (event) {
             event.preventDefault();
             var initialPrice = parseFloat(document.getElementById('initialPrice').value);
@@ -80,21 +113,6 @@
 
             resultElement.innerHTML = '<p class="success">Nauja kaina: ' + newPrice.toFixed(2) + ' Eur</p>';
         });
-
-        document.getElementById('initialPrice').addEventListener('input', validateInput);
-        document.getElementById('percentage').addEventListener('input', validateInput);
-
-        function validateInput() {
-            var initialPrice = parseFloat(document.getElementById('initialPrice').value);
-            var percentage = parseFloat(document.getElementById('percentage').value);
-            var calculateButton = document.getElementById('calculateButton');
-
-            if (!isNaN(initialPrice) && initialPrice > 0 && !isNaN(percentage) && percentage > 0 && percentage <= 100) {
-                calculateButton.disabled = false;
-            } else {
-                calculateButton.disabled = true;
-            }
-        }
     </script>
 
 </body>
